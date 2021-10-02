@@ -30,12 +30,8 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -56,9 +52,8 @@ import com.qualcomm.robotcore.util.Range;
 public class AutoConfigMenu extends OpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    // The properties are available after the
-    // call to the ShowMenu method of the AutonomousConfiguration class.
     private AutonomousConfiguration autoConfig;
+    private boolean optionsSelected = false;
     private AutonomousConfiguration.AllianceColor alliance;
     private AutonomousConfiguration.StartPosition startPosition;
     private AutonomousConfiguration.ParkLocation parkLocation;
@@ -77,12 +72,11 @@ public class AutoConfigMenu extends OpMode {
         // step (using the FTC Robot Controller app on the phone).
 //        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
 //        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-
+        autoConfig = new AutonomousConfiguration(gamepad1, telemetry);
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
 //        leftDrive.setDirection(DcMotor.Direction.FORWARD);
 //        rightDrive.setDirection(DcMotor.Direction.REVERSE);
-        GetAutonomousConfigurationOptions();
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -92,6 +86,13 @@ public class AutoConfigMenu extends OpMode {
      */
     @Override
     public void init_loop() {
+        if (!optionsSelected) {
+            optionsSelected = autoConfig.GetOptions();
+        }
+
+        if (optionsSelected) {
+            ShowSelectedOptions();
+        }
     }
 
     /*
@@ -143,11 +144,7 @@ public class AutoConfigMenu extends OpMode {
     public void stop() {
     }
 
-    private void GetAutonomousConfigurationOptions() {
-        // Get configuration selections from the driver using gamepad1.
-        autoConfig = new AutonomousConfiguration(gamepad1, telemetry);
-        autoConfig.ShowMenu();
-
+    private void ShowSelectedOptions() {
         // Save the driver selections for use in your autonomous strategy.
         alliance = autoConfig.getAlliance();
         startPosition = autoConfig.getStartPosition();

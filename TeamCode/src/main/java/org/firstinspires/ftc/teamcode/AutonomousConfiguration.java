@@ -37,6 +37,7 @@ public class AutonomousConfiguration {
         parklocation = ParkLocation.None;
         deliverFreight = DeliverFreight.No;
         deliverDuck = DeliverDuck.No;
+        ShowHelp();
     }
 
     private AllianceColor alliance;
@@ -46,6 +47,11 @@ public class AutonomousConfiguration {
     private DeliverFreight deliverFreight;
     private Gamepad gamePad1;
     private Telemetry telemetry;
+    private Telemetry.Item teleAlliance;
+    private Telemetry.Item teleStartPosition;
+    private Telemetry.Item teleParkLocation;
+    private Telemetry.Item teleDeliverDuck;
+    private Telemetry.Item teleDeliverFreight;
 
     public enum AllianceColor {
         None,
@@ -128,71 +134,73 @@ public class AutonomousConfiguration {
         return deliverFreight;
     }
 
-    // Call this from your opMode to show the menu for selection.
-    public void ShowMenu() {
-        ElapsedTime runTime = new ElapsedTime();
+    private void ShowHelp() {
         telemetry.setAutoClear(false);
-        Telemetry.Item teleAlliance = telemetry.addData("X = Blue, B = Red", getAlliance());
-        Telemetry.Item teleStartPosition = telemetry.addData("D-pad left/right, select start position", getStartPosition());
-        Telemetry.Item teleParkLocation = telemetry.addData("D-pad up to cycle park location", getParklocation());
-        Telemetry.Item teleDeliverduck = telemetry.addData("D-pad down to cycle deliver duck", getDeliverDuck());
-        Telemetry.Item teleDeliverFreight = telemetry.addData("Left Bumper to cycle deliver freight", getDeliverFreight());
+        teleStartPosition = telemetry.addData("D-pad left/right, select start position", getStartPosition());
+        teleParkLocation = telemetry.addData("D-pad up to cycle park location", getParklocation());
+        teleAlliance = telemetry.addData("X = Blue, B = Red", getAlliance());
+        teleDeliverDuck = telemetry.addData("D-pad down to cycle deliver duck", getDeliverDuck());
+        teleDeliverFreight = telemetry.addData("Left Bumper to cycle deliver freight", getDeliverFreight());
         telemetry.addData("Finished", "Press game pad Start");
+    }
 
-        // Loop while driver makes selections.
-        do {
-            if (gamePad1.x) {
-                alliance = AllianceColor.Blue;
+    // Call this in a loop from your opMode until it returns true.
+    public boolean GetOptions() {
+        ElapsedTime runTime = new ElapsedTime();
+
+        if (gamePad1.x) {
+            alliance = AllianceColor.Blue;
+        }
+
+        if (gamePad1.b) {
+            alliance = AllianceColor.Red;
+        }
+
+        teleAlliance.setValue(alliance);
+
+        if (gamePad1.dpad_left) {
+            startPosition = StartPosition.Back;
+        }
+
+        if (gamePad1.dpad_right) {
+            startPosition = StartPosition.Front;
+        }
+
+        teleStartPosition.setValue(startPosition);
+
+        if (gamePad1.dpad_up) {
+            parklocation = parklocation.getNext();
+        }
+
+        teleParkLocation.setValue(parklocation);
+
+        if (gamePad1.dpad_down) {
+            deliverDuck = deliverDuck.getNext();
+        }
+
+        teleDeliverDuck.setValue(deliverDuck);
+
+        if (gamePad1.left_bumper) {
+            deliverFreight = deliverFreight.getNext();
+        }
+
+        teleDeliverFreight.setValue(deliverFreight);
+
+        telemetry.update();
+
+        // If there is no gamepad timeout for debugging.
+        if (gamePad1.id == -1) {
+            // The timer is for debugging, remove it when you have a gamepad connected.
+            if (runTime.seconds() > 3) {
+                return true;
             }
-
-            if (gamePad1.b) {
-                alliance = AllianceColor.Red;
+        } else {
+            // Only allow loop exit if alliance has been selected.
+            if (gamePad1.start && alliance != AllianceColor.None) {
+                return true;
             }
+        }
 
-            teleAlliance.setValue(alliance);
-
-            if (gamePad1.dpad_left) {
-                startPosition = StartPosition.Back;
-            }
-
-            if (gamePad1.dpad_right) {
-                startPosition = StartPosition.Front;
-            }
-
-            teleStartPosition.setValue(startPosition);
-
-            if (gamePad1.dpad_up) {
-                parklocation = parklocation.getNext();
-            }
-
-            teleParkLocation.setValue(parklocation);
-
-            if (gamePad1.dpad_down) {
-                deliverDuck = deliverDuck.getNext();
-            }
-
-            teleDeliverduck.setValue(deliverDuck);
-
-            if (gamePad1.left_bumper) {
-                deliverFreight = deliverFreight.getNext();
-            }
-
-            teleDeliverFreight.setValue(deliverFreight);
-
-            telemetry.update();
-
-            // If there is no gamepad timeout for debugging.
-            if (gamePad1.id == -1) {
-                // The timer is for debugging, remove it when you have a gamepad connected.
-                if (runTime.seconds() > 3) {
-                    break;
-                }
-            } else {
-                // Only allow loop exit if alliance has been selected.
-                if (gamePad1.start && alliance != AllianceColor.None) {
-                    break;
-                }
-            }
-        } while (true);
+        return false;
     }
 }
