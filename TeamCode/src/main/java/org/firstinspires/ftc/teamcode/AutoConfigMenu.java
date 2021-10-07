@@ -31,7 +31,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This file contains an example of an iterative (Non-Linear) "OpMode".
@@ -39,19 +42,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * The names of OpModes appear on the menu of the FTC Driver Station.
  * When an selection is made from the menu, the corresponding OpMode
  * class is instantiated on the Robot Controller and executed.
- * <p>
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all iterative OpModes contain.
- * <p>
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
 @Autonomous(name = "Example: Auto Config Menu", group = "Example")
 //@Disabled
 public class AutoConfigMenu extends OpMode {
     // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
+    HardwarePushbot robot = new HardwarePushbot();   // Use a Pushbot's hardware
+    private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
+    // Setup a variable for each drive wheel to save power level for telemetry
+    double leftPower = 0;
+    double rightPower = 0;
     private AutonomousConfiguration autoConfig;
     private boolean optionsSelected = false;
     private AutonomousConfiguration.AllianceColor alliance;
@@ -59,8 +60,25 @@ public class AutoConfigMenu extends OpMode {
     private AutonomousConfiguration.ParkLocation parkLocation;
     private AutonomousConfiguration.DeliverDuck deliverDuck;
     private AutonomousConfiguration.DeliverFreight deliverFreight;
-//    private DcMotor leftDrive = null;
-//    private DcMotor rightDrive = null;
+    private final DcMotor leftDrive = null;
+    private final DcMotor rightDrive = null;
+
+    // States for navigation.
+    private enum State {
+        STATE_INITIAL,
+        STATE_DRIVE_FORWARD,
+        STATE_TURN_90,
+        STATE_DRIVE_TO_WALL,
+        STATE_BACKUP,
+        STATE_STOP
+    }
+
+    // Loop cycle time stats variables
+    private ElapsedTime mStateTime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);  // Time into current state
+    private State mCurrentState;    // Current State Machine State.
+
+    static final double FORWARD_SPEED = 0.6;
+    static final double TURN_SPEED = 0.5;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -77,6 +95,7 @@ public class AutoConfigMenu extends OpMode {
         // Reverse the motor that runs backwards when connected directly to the battery
 //        leftDrive.setDirection(DcMotor.Direction.FORWARD);
 //        rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        mCurrentState = State.STATE_INITIAL;
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
@@ -101,7 +120,6 @@ public class AutoConfigMenu extends OpMode {
     @Override
     public void start() {
         runtime.reset();
-        telemetry.setAutoClear(true);
     }
 
     /*
@@ -109,31 +127,74 @@ public class AutoConfigMenu extends OpMode {
      */
     @Override
     public void loop() {
-        // Setup a variable for each drive wheel to save power level for telemetry
-        double leftPower = 0;
-        double rightPower = 0;
+        switch (mCurrentState) {
+            case STATE_INITIAL:
+                newState(State.STATE_DRIVE_FORWARD);
+                runtime.reset();
+                break;
 
-        // Choose to drive using either Tank Mode, or POV Mode
-        // Comment out the method that's not used.  The default below is POV.
+            // Step 1:  Drive forward.
+            case STATE_DRIVE_FORWARD:
+//        robot.leftDrive.setPower(FORWARD_SPEED);
+//        robot.rightDrive.setPower(FORWARD_SPEED);
+                if ((runtime.seconds() >= 3.0)) {
+                    newState(State.STATE_TURN_90);
+                    runtime.reset();
+                }
 
-        // POV Mode uses left stick to go forward, and right stick to turn.
-        // - This uses basic math to combine motions and is easier to drive straight.
-//        double drive = -gamepad1.left_stick_y;
-//        double turn  =  gamepad1.right_stick_x;
-//        leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
-//        rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
+                break;
 
-        // Tank Mode uses one stick to control each wheel.
-        // - This requires no math, but it is hard to drive forward slowly and keep straight.
-        // leftPower  = -gamepad1.left_stick_y ;
-        // rightPower = -gamepad1.right_stick_y ;
+            // Step 2:  Spin left/right.
+            case STATE_TURN_90:
+                telemetry.addData("Turn:", TurnDirection(alliance));
+                if (alliance == AutonomousConfiguration.AllianceColor.Red) {
+//            robot.leftDrive.setPower(-TURN_SPEED);
+//            robot.rightDrive.setPower(+TURN_SPEED);
+                } else {
+//            robot.leftDrive.setPower(TURN_SPEED);
+//            robot.rightDrive.setPower(-TURN_SPEED);
+                }
 
-        // Send calculated power to wheels
-//        leftDrive.setPower(leftPower);
-//        rightDrive.setPower(rightPower);
+                if ((runtime.seconds() >= 1.3)) {
+                    newState(State.STATE_DRIVE_TO_WALL);
+                    runtime.reset();
+                }
 
+                break;
+
+            // Step 3:  Drive to wall
+            case STATE_DRIVE_TO_WALL:
+//        robot.leftDrive.setPower(FORWARD_SPEED);
+//        robot.rightDrive.setPower(FORWARD_SPEED);
+                if ((runtime.seconds() >= 3.0)) {
+                    newState(State.STATE_BACKUP);
+                    runtime.reset();
+                }
+
+                break;
+
+            // Step 4:  Backup.
+            case STATE_BACKUP:
+//        robot.leftDrive.setPower(-FORWARD_SPEED);
+//        robot.rightDrive.setPower(-FORWARD_SPEED);
+                if ((runtime.seconds() >= 0.75)) {
+                    newState(State.STATE_STOP);
+                    runtime.reset();
+                }
+
+                break;
+            case STATE_STOP:
+                telemetry.addData("Path", "Complete");
+//        robot.leftDrive.setPower(0);
+//        robot.rightDrive.setPower(0);
+                break;
+            // This should never happen.
+            default:
+                mCurrentState = State.STATE_INITIAL;
+        }
         // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Run Time:", String.format("%4.1f ", runtime.time()));
+        telemetry.addData("State Time:", String.format("%4.1f ", mStateTime.time()) + mCurrentState.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
     }
 
@@ -159,5 +220,28 @@ public class AutoConfigMenu extends OpMode {
         telemetry.addData("Deliver Duck", deliverDuck);
         telemetry.addData("Deliver Freight", deliverFreight);
         telemetry.update();
+    }
+
+    private String TurnDirection(AutonomousConfiguration.AllianceColor alliance) {
+        String result;
+        if (alliance == AutonomousConfiguration.AllianceColor.Red) {
+            result = "Left";
+        } else {
+            result = "Right";
+        }
+        return result;
+    }
+
+    //--------------------------------------------------------------------------
+    //  Transition to a new state.
+    //--------------------------------------------------------------------------
+    private void newState(State newState) {
+        // Reset the state time, and then change to next state.
+        mStateTime.reset();
+        mCurrentState = newState;
+    }
+
+    private void ParkInAllianceStorage() {
+
     }
 }
