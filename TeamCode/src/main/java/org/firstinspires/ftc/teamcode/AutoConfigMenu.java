@@ -102,6 +102,8 @@ public class AutoConfigMenu extends OpMode {
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
+     * Be aware that in an iterative opMode the AutonomousConfiguration code will not
+     * wait for you to press the gamepad start button before you press the app Start.
      */
     @Override
     public void init_loop() {
@@ -146,7 +148,6 @@ public class AutoConfigMenu extends OpMode {
 
             // Step 2:  Spin left/right.
             case STATE_TURN_90:
-                telemetry.addData("Turn:", TurnDirection(alliance));
                 if (alliance == AutonomousConfiguration.AllianceColor.Red) {
 //            robot.leftDrive.setPower(-TURN_SPEED);
 //            robot.rightDrive.setPower(+TURN_SPEED);
@@ -155,7 +156,7 @@ public class AutoConfigMenu extends OpMode {
 //            robot.rightDrive.setPower(-TURN_SPEED);
                 }
 
-                if ((runtime.seconds() >= 1.3)) {
+                if ((runtime.seconds() >= 4)) {
                     newState(State.STATE_DRIVE_TO_WALL);
                     runtime.reset();
                 }
@@ -196,6 +197,7 @@ public class AutoConfigMenu extends OpMode {
         telemetry.addData("Run Time:", String.format("%4.1f ", runtime.time()));
         telemetry.addData("State Time:", String.format("%4.1f ", mStateTime.time()) + mCurrentState.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
+        telemetry.addData("Turn:", TurnDirection(alliance));
     }
 
     /*

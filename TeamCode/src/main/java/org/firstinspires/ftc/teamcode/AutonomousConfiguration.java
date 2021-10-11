@@ -1,13 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Created by Ron on 11/16/2016.
- * Modified: 10/1/2021
+ * Modified: 10/10/2021
  * <p>
  * This class provides configuration for an autonomous opMode.
  * Most games benefit from autonomous opModes that can implement
@@ -25,14 +24,53 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
  */
 
 public class AutonomousConfiguration {
+    private AllianceColor alliance;
+    private StartPosition startPosition;
+    private ParkLocation parklocation;
+    private DeliverDuck deliverDuck;
+    private DeliverFreight deliverFreight;
+    private NinjaGamePad gamePad1;
+    private Telemetry telemetry;
+    private Telemetry.Item teleAlliance;
+    private Telemetry.Item teleStartPosition;
+    private Telemetry.Item teleParkLocation;
+    private Telemetry.Item teleDeliverDuck;
+    private Telemetry.Item teleDeliverFreight;
+    private DebouncedButton aButton;
+    private DebouncedButton bButton;
+    private DebouncedButton dPadLeft;
+    private DebouncedButton dPadRight;
+    private DebouncedButton dPadDown;
+    private DebouncedButton dPadUp;
+    private DebouncedButton leftBumper;
+    private DebouncedButton rightBumper;
+    private DebouncedButton leftStickButton;
+    private DebouncedButton rightStickButton;
+    private DebouncedButton startButton;
+    private DebouncedButton xButton;
+    private DebouncedButton yButton;
+
     /*
      Pass in gamepad and telemetry from your opMode when creating this object.
      */
     public AutonomousConfiguration(Gamepad gamepad, Telemetry telemetry1) {
-        this.gamePad1 = gamepad;
+        this.gamePad1 = new NinjaGamePad(gamepad);
+        aButton = gamePad1.getAButton().debounced();
+        bButton = gamePad1.getBButton().debounced();
+        dPadLeft = gamePad1.getDpadLeft().debounced();
+        dPadRight = gamePad1.getDpadRight().debounced();
+        dPadDown = gamePad1.getDpadDown().debounced();
+        dPadUp = gamePad1.getDpadUp().debounced();
+        rightBumper = gamePad1.getDpadUp().debounced();
+        leftBumper = gamePad1.getLeftBumper().debounced();
+        xButton = gamePad1.getXButton().debounced();
+        yButton = gamePad1.getYButton().debounced();
+        leftStickButton = gamePad1.getLeftStickButton().debounced();
+        rightStickButton = gamePad1.getRightStickButton().debounced();
+        startButton = gamePad1.getStartButton().debounced();
         this.telemetry = telemetry1;
         // Default selections if driver does not select anything.
-        alliance = AllianceColor.None;
+        alliance = AllianceColor.Red;
         startPosition = StartPosition.None;
         parklocation = ParkLocation.None;
         deliverFreight = DeliverFreight.No;
@@ -40,21 +78,84 @@ public class AutonomousConfiguration {
         ShowHelp();
     }
 
-    private AllianceColor alliance;
-    private StartPosition startPosition;
-    private ParkLocation parklocation;
-    private DeliverDuck deliverDuck;
-    private DeliverFreight deliverFreight;
-    private Gamepad gamePad1;
-    private Telemetry telemetry;
-    private Telemetry.Item teleAlliance;
-    private Telemetry.Item teleStartPosition;
-    private Telemetry.Item teleParkLocation;
-    private Telemetry.Item teleDeliverDuck;
-    private Telemetry.Item teleDeliverFreight;
+    public AllianceColor getAlliance() {
+        return alliance;
+    }
+
+    public StartPosition getStartPosition() {
+        return startPosition;
+    }
+
+    public ParkLocation getParklocation() {
+        return parklocation;
+    }
+
+    public DeliverDuck getDeliverDuck() {
+        return deliverDuck;
+    }
+
+    public DeliverFreight getDeliverFreight() {
+        return deliverFreight;
+    }
+
+    private void ShowHelp() {
+        teleStartPosition = telemetry.addData("D-pad left/right, select start position", getStartPosition());
+        teleParkLocation = telemetry.addData("D-pad up to cycle park location", getParklocation());
+        teleAlliance = telemetry.addData("X = Blue, B = Red", getAlliance());
+        teleDeliverDuck = telemetry.addData("D-pad down to cycle deliver duck", getDeliverDuck());
+        teleDeliverFreight = telemetry.addData("Left Bumper to cycle deliver freight", getDeliverFreight());
+        telemetry.addData("Finished", "Press game pad Start");
+//        telemetry.update();
+    }
+
+    // Call this in a loop from your opMode until it returns true.
+    public boolean GetOptions() {
+        if (xButton.getRise()) {
+            alliance = AllianceColor.Blue;
+        }
+
+        if (bButton.getRise()) {
+            alliance = AllianceColor.Red;
+        }
+
+        teleAlliance.setValue(alliance);
+
+        if (dPadLeft.getRise()) {
+            startPosition = StartPosition.Back;
+        }
+
+        if (dPadRight.getRise()) {
+            startPosition = StartPosition.Front;
+        }
+
+        teleStartPosition.setValue(startPosition);
+
+        if (rightBumper.getRise()) {
+            parklocation = parklocation.getNext();
+        }
+
+        teleParkLocation.setValue(parklocation);
+
+        if (dPadDown.getRise()) {
+            deliverDuck = deliverDuck.getNext();
+        }
+
+        teleDeliverDuck.setValue(deliverDuck);
+
+        if (leftBumper.getRise()) {
+            deliverFreight = deliverFreight.getNext();
+        }
+
+        teleDeliverFreight.setValue(deliverFreight);
+
+        if (startButton.getFall()) {
+            return true;
+        }
+
+        return false;
+    }
 
     public enum AllianceColor {
-        None,
         Red,
         Blue
     }
@@ -112,82 +213,5 @@ public class AutonomousConfiguration {
         public DeliverFreight getNext() {
             return values()[(ordinal() + 1) % values().length];
         }
-    }
-
-    public AllianceColor getAlliance() {
-        return alliance;
-    }
-
-    public StartPosition getStartPosition() {
-        return startPosition;
-    }
-
-    public ParkLocation getParklocation() {
-        return parklocation;
-    }
-
-    public DeliverDuck getDeliverDuck() {
-        return deliverDuck;
-    }
-
-    public DeliverFreight getDeliverFreight() {
-        return deliverFreight;
-    }
-
-    private void ShowHelp() {
-        teleStartPosition = telemetry.addData("D-pad left/right, select start position", getStartPosition());
-        teleParkLocation = telemetry.addData("D-pad up to cycle park location", getParklocation());
-        teleAlliance = telemetry.addData("X = Blue, B = Red", getAlliance());
-        teleDeliverDuck = telemetry.addData("D-pad down to cycle deliver duck", getDeliverDuck());
-        teleDeliverFreight = telemetry.addData("Left Bumper to cycle deliver freight", getDeliverFreight());
-        telemetry.addData("Finished", "Press game pad Start");
-//        telemetry.update();
-    }
-
-    // Call this in a loop from your opMode until it returns true.
-    public boolean GetOptions() {
-        ElapsedTime runTime = new ElapsedTime();
-
-        if (gamePad1.x) {
-            alliance = AllianceColor.Blue;
-        }
-
-        if (gamePad1.b) {
-            alliance = AllianceColor.Red;
-        }
-
-        teleAlliance.setValue(alliance);
-
-        if (gamePad1.dpad_left) {
-            startPosition = StartPosition.Back;
-        }
-
-        if (gamePad1.dpad_right) {
-            startPosition = StartPosition.Front;
-        }
-
-        teleStartPosition.setValue(startPosition);
-
-        if (gamePad1.dpad_up) {
-            parklocation = parklocation.getNext();
-        }
-
-        teleParkLocation.setValue(parklocation);
-
-        if (gamePad1.dpad_down) {
-            deliverDuck = deliverDuck.getNext();
-        }
-
-        teleDeliverDuck.setValue(deliverDuck);
-
-        if (gamePad1.left_bumper) {
-            deliverFreight = deliverFreight.getNext();
-        }
-
-        teleDeliverFreight.setValue(deliverFreight);
-
-//        telemetry.update();
-
-        return false;
     }
 }
