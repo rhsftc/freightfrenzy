@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * class is instantiated on the Robot Controller and executed.
  */
 
-@Autonomous(name = "Example: Auto Config Menu", group = "Example")
+@Autonomous(name = "Auto Config Menu", group = "Example")
 //@Disabled
 public class AutoConfigMenu extends OpMode {
     // Declare OpMode members.

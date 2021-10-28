@@ -62,7 +62,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * ftc_app\doc\tutorial\FTC_FieldCoordinateSystemDefinition.pdf
  */
 
-@Autonomous(name = "Pushbot: Auto Drive By Imu", group = "Pushbot")
+@Autonomous(name = "Auto Drive By Imu", group = "Pushbot")
 //@Disabled
 public class RHSPushbotAutoDriveByGyro_Linear extends LinearOpMode {
 
