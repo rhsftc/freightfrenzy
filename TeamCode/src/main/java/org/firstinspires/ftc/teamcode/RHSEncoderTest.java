@@ -1,14 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
-@Autonomous(name = "Encoder Test", group = "Encoder")
-//@Disabled
-public class EncoderTest extends LinearOpMode {
+@Autonomous(name = "Encoder Test", group = "concept")
+@Disabled
+public class RHSEncoderTest extends LinearOpMode {
     double COUNTS_PER_MOTOR_REV;                         // Set it below.
     static final double DRIVE_GEAR_REDUCTION = 40.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
