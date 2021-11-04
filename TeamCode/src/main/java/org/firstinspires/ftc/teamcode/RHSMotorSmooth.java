@@ -49,7 +49,7 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Smooth Drive", group = "Linear Opmode")
+@TeleOp(name = "Smooth Drive", group = "concept")
 //@Disabled
 public class RHSMotorSmooth extends LinearOpMode {
 

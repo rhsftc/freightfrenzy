@@ -39,7 +39,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * is explained below.
  */
 
-@TeleOp(name="Drive To Target", group = "Concept")
+@TeleOp(name="Vuforia: Drive To Target", group = "camera")
 //@Disabled
 public class RHSVuforiaDriveToTargetWebcam extends LinearOpMode
 {

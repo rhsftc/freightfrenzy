@@ -16,8 +16,8 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-@TeleOp
-public class BallOrCube extends LinearOpMode {
+@TeleOp(name = "OpenCV: Ball/Cube", group = "camera")
+public class RHSBallOrCube extends LinearOpMode {
     OpenCvCamera webcam;
     SamplePipeline pipeline;
 

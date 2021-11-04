@@ -44,9 +44,9 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * class is instantiated on the Robot Controller and executed.
  */
 
-@Autonomous(name = "Auto Config Menu", group = "Example")
+@Autonomous(name = "Auto Config Menu", group = "concept")
 //@Disabled
-public class AutoConfigMenu extends OpMode {
+public class RHSAutonomousMenu extends OpMode {
     // Declare OpMode members.
     HardwarePushbot robot = new HardwarePushbot();   // Use a Pushbot's hardware
     private ElapsedTime runtime = new ElapsedTime(ElapsedTime.Resolution.SECONDS);
