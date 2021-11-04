@@ -178,9 +178,6 @@ public class RHSPipelineStageSwitching extends LinearOpMode
                 }
 
                 case RAW_IMAGE:
-                {
-                    return input;
-                }
 
                 default:
                 {
