@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * class is instantiated on the Robot Controller and executed.
  */
 
-@Autonomous(name = "Auto Config Menu", group = "concept")
+@Autonomous(name = "Auto Config Menu", group = "concept", preselectTeleOp = "Vuforia: Drive To Target")
 //@Disabled
 public class RHSAutonomousMenu extends OpMode {
     static final double FORWARD_SPEED = 0.6;
@@ -236,13 +236,33 @@ public class RHSAutonomousMenu extends OpMode {
         mCurrentState = newState;
     }
 
-    private void ParkInAllianceStorage() {
+    private boolean ParkInStorage() {
 
+        return false;
+    }
+
+    private boolean ParkInWarehouse() {
+
+        return false;
+    }
+
+    private boolean DeliverDuck() {
+
+        return false;
+    }
+
+    private boolean DeliverFreight() {
+
+        return false;
     }
 
     // States for navigation.
     private enum State {
         STATE_INITIAL,
+        STATE_PARK_IN_STORAGE,
+        STATE_PARK_IN_WAREHOUSE,
+        STATE_DELIVER_DUCK,
+        STATE_DELIVER_FREIGHT,
         STATE_DRIVE_FORWARD,
         STATE_TURN_90,
         STATE_DRIVE_TO_WALL,
