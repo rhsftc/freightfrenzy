@@ -21,7 +21,6 @@ public class RHSGyroMecanum {
     private DcMotorEx rightFront = null;
     private BNO055IMU imu = null;
     private imuDriveState currentDriveState;
-    private imuTurnState currentTurnState;
 
     public RHSGyroMecanum(DcMotorEx leftFront, DcMotorEx rightRear, DcMotorEx leftRear,
                           DcMotorEx rightFront, BNO055IMU imu) {
