@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 /*
     This is a simple mecanum drive opMode.
  */
-@TeleOp(name = "Smooth Drive", group = "concept")
+@TeleOp(name = "Mecanum Drive", group = "concept")
 //@Disabled
 public class RHSMecanumDrive extends LinearOpMode {
     RHSHardware robot = new RHSHardware();   // Use a Pushbot's hardware

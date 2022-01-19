@@ -73,7 +73,7 @@ public class AutonomousConfiguration {
         this.telemetry = telemetry1;
         // Default selections if driver does not select anything.
         alliance = AllianceColor.Red;
-        startPosition = StartPosition.None;
+        startPosition = StartPosition.Front;
         parklocation = ParkLocation.None;
         deliverFreight = DeliverFreight.No;
         deliverDuck = DeliverDuck.No;
@@ -111,12 +111,11 @@ public class AutonomousConfiguration {
         teleParkLocation = telemetry.addData("D-pad up to cycle park location", getParklocation());
         teleDeliverDuck = telemetry.addData("D-pad down to cycle deliver duck", getDeliverDuck());
         teleDeliverFreight = telemetry.addData("Y to cycle deliver freight", getDeliverFreight());
-        teleDelayStartSeconds = telemetry.addData("Delay Start", DelayStartSeconds());
-        telemetry.addData("Finished", "Press game pad Start");
-//        telemetry.update();
+        teleDelayStartSeconds = telemetry.addData("Left & Right buttons, Delay Start", DelayStartSeconds());
+        telemetry.addLine("Game pad or app Start will end selection.");
     }
 
-    // Call this in a loop from your opMode until it returns true.
+    // Call this in a loop from your opMode. It will returns true if you press the game pad Start.
     public boolean GetOptions() {
         if (xButton.getRise()) {
             alliance = AllianceColor.Blue;
