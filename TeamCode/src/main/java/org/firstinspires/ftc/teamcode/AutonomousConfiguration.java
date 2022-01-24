@@ -119,51 +119,89 @@ public class AutonomousConfiguration {
     public boolean GetOptions() {
         if (xButton.getRise()) {
             alliance = AllianceColor.Blue;
+            telemetry.speak("blue");
         }
 
         if (bButton.getRise()) {
             alliance = AllianceColor.Red;
+            telemetry.speak("red");
         }
 
         teleAlliance.setValue(alliance);
 
         if (dPadLeft.getRise()) {
             startPosition = StartPosition.Back;
+            telemetry.speak("start back");
         }
 
         if (dPadRight.getRise()) {
             startPosition = StartPosition.Front;
+            telemetry.speak("start front");
         }
 
         teleStartPosition.setValue(startPosition);
 
         if (dPadUp.getRise()) {
             parklocation = parklocation.getNext();
+            switch (parklocation) {
+                case StorageUnit:
+                    telemetry.speak("park in storage unit");
+                    break;
+                case WarehouseFront:
+                    telemetry.speak("park in warehouse front");
+                    break;
+                case WarehouseBack:
+                    telemetry.speak("park in warehouse back");
+                    break;
+            }
         }
 
         teleParkLocation.setValue(parklocation);
 
         if (dPadDown.getRise()) {
             deliverDuck = deliverDuck.getNext();
+            switch (deliverDuck) {
+                case Yes:
+                    telemetry.speak("deliver duck, yes");
+                    break;
+                case No:
+                    telemetry.speak("deleiver duck, no");
+                    break;
+            }
         }
 
         teleDeliverDuck.setValue(deliverDuck);
 
         if (yButton.getRise()) {
             deliverFreight = deliverFreight.getNext();
+            switch (deliverFreight) {
+                case Yes:
+                    telemetry.speak("deliver freight, yes");
+                    break;
+                case No:
+                    telemetry.speak("deleiver freight, no");
+                    break;
+            }
         }
 
         teleDeliverFreight.setValue(deliverFreight);
 
         // Keep range within 0-15 seconds. Wrap at either end.
-        if (leftBumper.getRise()) delayStartSeconds = delayStartSeconds - 1;
-        if (delayStartSeconds < 0) delayStartSeconds = 15;
-        if (rightBumper.getRise()) delayStartSeconds = delayStartSeconds + 1;
-        if (delayStartSeconds > 15) delayStartSeconds = 0;
+        if (leftBumper.getRise()) {
+            delayStartSeconds = delayStartSeconds - 1;
+            delayStartSeconds = (delayStartSeconds < 0) ? delayStartSeconds = 15 : delayStartSeconds;
+            telemetry.speak("delay start " + delayStartSeconds + " seconds");
+        }
+        if (rightBumper.getRise()) {
+            delayStartSeconds = delayStartSeconds + 1;
+            delayStartSeconds = (delayStartSeconds > 15) ? delayStartSeconds = 0 : delayStartSeconds;
+            telemetry.speak("delay start " + delayStartSeconds + " seconds");
+        }
 
         teleDelayStartSeconds.setValue(delayStartSeconds);
 
         if (startButton.getFall()) {
+            telemetry.speak("ready to start");
             return true;
         }
 
