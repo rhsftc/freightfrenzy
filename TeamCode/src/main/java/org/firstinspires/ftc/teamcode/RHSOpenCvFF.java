@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,7 +40,7 @@ public class RHSOpenCvFF extends LinearOpMode {
     {
         // OpenCV webcam
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam1"), cameraMonitorViewId);
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam1"), cameraMonitorViewId);
         //OpenCV Pipeline
 
         pipeline = new ContourPipeline(0.2, 0.2, 0.2, 0.2);
@@ -63,9 +64,9 @@ public class RHSOpenCvFF extends LinearOpMode {
         });
 
         // Only if you are using ftcdashboard
-//        FtcDashboard dashboard = FtcDashboard.getInstance();
-//        telemetry = dashboard.getTelemetry();
-//        FtcDashboard.getInstance().startCameraStream(webcam, 10);
+        FtcDashboard dashboard = FtcDashboard.getInstance();
+        telemetry = dashboard.getTelemetry();
+        FtcDashboard.getInstance().startCameraStream(webcam, 10);
 
         waitForStart();
 
