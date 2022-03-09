@@ -37,41 +37,47 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file contains an example of a Linear "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
+ * An OpMode is a 'program' that runs in either the autonomous or the teleop
+ * period of an FTC match.
  * The names of OpModes appear on the menu of the FTC Driver Station.
  * When a selection is made from the menu, the corresponding OpMode is executed.
  * <p>
- * This particular OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
+ * This particular OpMode illustrates driving a 4-motor Omni-Directional (or
+ * Holonomic) robot.
  * This code will work with either a Mecanum-Drive or an X-Drive train.
- * Both of these drives are illustrated at https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html
- * Note that a Mecanum drive must display an X roller-pattern when viewed from above.
+ * Both of these drives are illustrated at
+ * https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html
+ * Note that a Mecanum drive must display an X roller-pattern when viewed from
+ * above.
  * <p>
- * Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.
+ * Holonomic drives provide the ability for the robot to move in three axes
+ * (directions) simultaneously.
  * Each motion axis is controlled by one Joystick axis.
  * <p>
- * 1) Axial:    Driving forward and backwards               Left-joystick Forward/Backwards
- * 2) Lateral:  Strafing right and left                     Left-joystick Right and Left
- * 3) Yaw:      Rotating Clockwise and counter clockwise    Right-joystick Right and Left
+ * 1) Axial: Driving forward and backwards Left-joystick Forward/Backwards
+ * 2) Lateral: Strafing right and left Left-joystick Right and Left
+ * 3) Yaw: Rotating Clockwise and counter clockwise Right-joystick Right and
+ * Left
  * <p>
- * This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
- * When you first test your robot, if it moves backwards when you push the left stick forward, then you must flip
+ * This code is written assuming that the right-side motors need to be reversed
+ * for the robot to drive forward.
+ * When you first test your robot, if it moves backwards when you push the left
+ * stick forward, then you must flip
  * the direction of all 4 motors (see code below).
- * <p>
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name = "Basic: Omni Linear OpMode", group = "basic")
+@TeleOp(name = "Omni Test", group = "test")
 @Disabled
-public class EdinaFTCBasicOmniOpMode_Linear extends LinearOpMode {
-
+public class EdinaFTCOmniTest extends LinearOpMode {
     private final ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
+        // Initialize the hardware variables. Note that the strings used here must
+        // correspond
+        // to the names assigned during the robot configuration step on the DS or RC
+        // devices.
         DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front_drive");
         DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back_drive");
         DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front_drive");
@@ -79,7 +85,8 @@ public class EdinaFTCBasicOmniOpMode_Linear extends LinearOpMode {
 
         // Most robots need the motors on one side to be reversed to drive forward.
         // When you first test your robot, push the left joystick forward
-        // and flip the direction ( FORWARD <-> REVERSE ) of any wheel that runs backwards
+        // and flip the direction ( FORWARD <-> REVERSE ) of any wheel that runs
+        // backwards
         leftFrontDrive.setDirection(DcMotor.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
         rightFrontDrive.setDirection(DcMotor.Direction.FORWARD);
@@ -87,6 +94,8 @@ public class EdinaFTCBasicOmniOpMode_Linear extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
+        telemetry.sddData("Use the Start button to toggle test mode.");
+        telemetry.addData("Use X, A, Y or B to run each motor forward.");
         telemetry.update();
 
         waitForStart();
@@ -98,12 +107,14 @@ public class EdinaFTCBasicOmniOpMode_Linear extends LinearOpMode {
             // Start toggles test mode to use x, a, y and b to test each motor.
             boolean testMode = gamepad1.start;
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to
+            // rotate.
+            double axial = -gamepad1.left_stick_y; // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
             double yaw = gamepad1.right_stick_x;
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
+            // Combine the joystick requests for each axis-motion to determine each wheel's
+            // power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
             double leftFrontPower = axial + lateral + yaw;
             double rightFrontPower = axial - lateral - yaw;
@@ -125,19 +136,16 @@ public class EdinaFTCBasicOmniOpMode_Linear extends LinearOpMode {
 
             // This is test code:
             //
-            // Uncomment the following code to test your motor directions.
             // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
-
+            // 1) First get all the motors to take to correct positions on the robot
+            // by adjusting your Robot Configuration if necessary.
+            // 2) Then make sure they run in the correct direction by modifying the
+            // the setDirection() calls above.
             if (testMode) {
-                leftFrontPower = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-                leftBackPower = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-                rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-                rightBackPower = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+                leftFrontPower = gamepad1.x ? 1.0 : 0.0; // X gamepad
+                leftBackPower = gamepad1.a ? 1.0 : 0.0; // A gamepad
+                rightFrontPower = gamepad1.y ? 1.0 : 0.0; // Y gamepad
+                rightBackPower = gamepad1.b ? 1.0 : 0.0; // B gamepad
             } else {
                 // Send calculated power to wheels
                 leftFrontDrive.setPower(leftFrontPower);
