@@ -94,8 +94,8 @@ public class EdinaFTCOmniTest extends LinearOpMode {
 
         // Wait for the game to start (driver presses PLAY)
         telemetry.addData("Status", "Initialized");
-        telemetry.sddData("Use the Start button to toggle test mode.");
-        telemetry.addData("Use X, A, Y or B to run each motor forward.");
+        telemetry.addData("", "Use the Start button to toggle test mode.");
+        telemetry.addData("", "Use X, A, Y or B to run each motor forward.");
         telemetry.update();
 
         waitForStart();
